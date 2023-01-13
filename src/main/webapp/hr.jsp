@@ -221,7 +221,10 @@ comes with the employee. Then in the JSP  -->
    
   <!--   Training CRUD start -->
     
-  
+  <form action="/GetWebMessage/hero" method="post">
+  <input type="text" value="Write message here" name= "message"size="255">
+  <input type="submit" value="SUBMIT">
+  </form>
     
     
         <form action="/WebApp/FindTrainingServlet" method="post">

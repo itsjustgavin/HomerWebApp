@@ -343,14 +343,53 @@ interface TrainingRepository extends JpaRepository<Training, Long> {
 //}
 
 @Entity
+@Table(name="messages")
+class Messages {
+	@Id
+	@Column
+	private int messages_id;
+	@Column
+	private String message_from_hr;
+	
+	public Messages() {
+		
+	}
+	public Messages(int messages_id, String message_from_hr) {
+		super();
+		this.messages_id = messages_id;
+		this.message_from_hr = message_from_hr;
+	}
+	public int getId() {
+		return messages_id;
+	}
+	public void setId(int messages_id) {
+		this.messages_id = messages_id;
+	}
+	public String getMessage_from_hr() {
+		return message_from_hr;
+	}
+	public void setMessage_from_hr(String message_from_hr) {
+		this.message_from_hr = message_from_hr;
+	}
+	@Override
+	public String toString() {
+		return "Messages [messages_id=" + messages_id + ", message_from_hr=" + message_from_hr + "]";
+	}
+	
+	
+}
+interface MessagesRepository extends JpaRepository<Messages, Long> {
+	Messages findById(int messages_id);
+}
+@Entity
 @Table(name = "documents")
 class Documents {
 	@ManyToOne
 	@JoinColumn(name = "employee_id")
 	private Employee employee;
 	
-	@Id
-	@Column
+	@Id()
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int doc_id;
 	@Column
 	private String policies;
@@ -494,6 +533,8 @@ class EmployeeRestController {
 	TrainingRepository trainingRepository;
 	@Autowired
 	DocumentsRepository documentsRepository;
+	@Autowired
+	MessagesRepository messagesRepository;
 //	//this takes all info from the table and persists it to the database
 	/*
 	 * @PostMapping("/employee/register")
@@ -607,7 +648,8 @@ class EmployeeRestController {
 			if (username.equals(userNameFromDB)) {
 				mv.setViewName("lookup");
 				//from employee
-				session.setAttribute("fnameFromDB", fnameFromDB);
+				model.addAttribute("fnameFromDB", fnameFromDB);
+//				session.setAttribute("fnameFromDB", fnameFromDB);
 				model.addAttribute("lnameFromDB", lnameFromDB);
 				model.addAttribute("emailFromDB", emailFromDB);
 				model.addAttribute("userNameFromDB", userNameFromDB);
@@ -841,7 +883,7 @@ class EmployeeRestController {
         	resultSetDoc.setPolicies(documents.getPolicies());
         	
         	
-        	
+        	model.addAttribute("username",username);
         	model.addAttribute("id",emp_id);
         	model.addAttribute("python",python);
         	model.addAttribute("java",java);
@@ -858,7 +900,7 @@ class EmployeeRestController {
         	employeeRepository.save(rs);
         	
         	model.addAttribute("updated", "Update successful");
-        	mv.setViewName("hr");
+        	mv.setViewName("successfulupdate");
 //        	mv.setViewName("employeeTrainingUpdate");
         } else {
 //        	resultSet = new Training();
@@ -980,4 +1022,20 @@ public ModelAndView updateDocuments(Documents documents) {
 	return mv;
        
    }
+    
+    @PostMapping("/GetWebMessage/hero")
+    public ModelAndView messegeBoard(@ModelAttribute("messages") Messages messages) {
+    	ModelAndView mv = new ModelAndView();
+
+    	messages.setMessage_from_hr(messages.getMessage_from_hr());
+    
+    	
+    	
+    	
+    
+    	messagesRepository.save(messages);
+    	
+    	
+    	return mv;
+    }
 }
