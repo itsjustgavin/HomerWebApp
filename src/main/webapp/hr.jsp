@@ -34,6 +34,8 @@
 	</form>
 <h2>${updated }</h2>
 	<!-- Employee CRUD START -->
+	
+	<h3>Look up employee by first and last name</h3>
 	<form action="/employee/lookup" method="post">
 		<table>
 			<tr>
@@ -80,16 +82,16 @@
 	
 	
 	
-    <div class="container">
+  <!--   <div class="container">
   <h2>Insert Employee</h2>
-  <!-- Trigger the modal with a button -->
+  Trigger the modal with a button
   <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal1">Open Modal</button>
 
-  <!-- Modal -->
+  Modal
   <div class="modal fade" id="myModal1" role="dialog">
     <div class="modal-dialog">
     
-      <!-- Modal content-->
+      Modal content
      	<h1>Insert employee</h1>
 	<form action="/employee/new" method="post">
 		<table>
@@ -131,11 +133,11 @@
     </div>
   </div>
   
-</div>
-  ${fname}
+</div> -->
 
 
-	<h1>Delete employee</h1>
+
+<%-- 	<h1>Delete employee</h1>
 	${deleted}
 	<br> ${doesntexist}
 	<form action="/employee/delete" method="post">
@@ -152,7 +154,7 @@
 
 
 		</table>
-	</form>
+	</form> --%>
 
 				<!-- button is link to next page, jsp:foward("/name.jsp")
 				ask user to enter employee name/then retrieve employee name 
@@ -221,31 +223,21 @@ comes with the employee. Then in the JSP  -->
    
   <!--   Training CRUD start -->
     
-  <form action="/GetWebMessage/hero" method="post">
-  <input type="text" value="Write message here" name= "message"size="255">
+ <%--  <form action="/GetWebMessage/hero" method="post">
+  <input type="text" placeholder="Write message here" name="message_from_hr" size="255">
   <input type="submit" value="SUBMIT">
   </form>
     
-    
-        <form action="/WebApp/FindTrainingServlet" method="post">
-    <table>
-    <tr>
-    <td>Look up employee's training qualifications by id
-    </td>
-    <td><input type ="number" name="training_id"></td>
-   
-    </tr>
-
-    <tr>
-    <td><input type="Submit" value = "SUBMIT"/> </td>
-    </tr>
-    </table></form>
+    <p>${message }<p>
+     --%>
     
 	<!-- Training CRUD END -->
 	
 	<!-- make button for logout, call method logout() -->
 	<!-- put session.invalidate() in the logout method, then forward to login page -->
 	
-	
+	<form action="/logout" method="post">
+<input type="submit" value="Logout">
+</form>
 </body>
 </html>

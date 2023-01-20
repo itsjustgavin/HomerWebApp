@@ -41,6 +41,22 @@
 			<tr>
 				<td>Username</td>
 				<td>${userNameFromDB }</td>
+				</tr>
+				<tr><td>Employee Role:</td>
+				<td>${emproleFromDB}</td>
+				</tr>
+				<tr>
+				<td>Phone number: </td>
+				<td>${phonenumberFromDB }</td>
+				</tr>
+				<tr>
+				<td>Employee ID:</td>
+				<td>${emp_idFromDB}</td>
+				</tr>
+				<tr>
+				<td>Hourly:</td>
+				<td>${hourlyFromDB}</td>
+				</tr>
 		</table>
 	</form>
 	<h1>Employee Training</h1>
@@ -209,5 +225,7 @@ $('body').on('click','.paginator-button', evt => {
     
 });
   </script>
+  
+  <a href="/hr.jsp"><button>Return</button></a>
 </body>
 </html>

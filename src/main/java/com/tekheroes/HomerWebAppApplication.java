@@ -1,6 +1,11 @@
 package com.tekheroes;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.spi.FileSystemProvider;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -8,14 +13,19 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
+import javax.annotation.processing.FilerException;
+
+import org.apache.tomcat.util.http.fileupload.FileUpload;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.SharedSessionContract;
 import org.hibernate.Transaction;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.internal.build.AllowSysOut;
-
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -23,32 +33,54 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 //import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.JpaRepository;
-
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 //import org.springframework.mail.SimpleMailMessage;
 //import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
-
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import jakarta.*;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
-
+import jakarta.servlet.http.Part;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 
 
 @SpringBootApplication
@@ -346,7 +378,7 @@ interface TrainingRepository extends JpaRepository<Training, Long> {
 @Table(name="messages")
 class Messages {
 	@Id
-	@Column
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int messages_id;
 	@Column
 	private String message_from_hr;
@@ -389,7 +421,7 @@ class Documents {
 	private Employee employee;
 	
 	@Id()
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int doc_id;
 	@Column
 	private String policies;
@@ -454,6 +486,9 @@ public Documents() {
 
 }
 
+
+
+
 //Jpa is crud operations, need POJO, Primary datatype in db
 
 interface DocumentsRepository extends JpaRepository<Documents, Long> {
@@ -473,53 +508,185 @@ interface DocumentsRepository extends JpaRepository<Documents, Long> {
 //		}
 //	}
 //}
+@Entity
+@Table(name="files")
+class DBFile {
+    @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    private String id;
 
+    private String fileName;
 
-class EverythingController {
-	String fName = "fname";
-	String lName = "lname";
-	String email = "email";
-	String number = "number";
-	String emprole = "emprole";
-	String userName = "username";
-	String passWord = "password";
+    private String fileType;
 
-	int login_id = 0;
-	int employee_id = 0;
-	int hourly = 0;
+    @Lob
+    private byte[] data;
 
-	int t_id = 0;
+    public DBFile() {
 
-	String python = "python";
+    }
 
-	String java = "java";
+    public DBFile(String fileName, String fileType, byte[] data) {
+        this.fileName = fileName;
+        this.fileType = fileType;
+        this.data = data;
+    }
 
-	String javascript = "javascript";
+	public String getId() {
+		return id;
+	}
 
-	String MY_sql = "MY_sql";
+	public void setId(String id) {
+		this.id = id;
+	}
 
-	public EverythingController(String fName, String lName, String email, String number, String emprole,
-			String userName, String passWord, int login_id, int employee_id, int hourly, int t_id, String python,
-			String java, String javascript, String mY_sql) {
-		super();
-		this.fName = fName;
-		this.lName = lName;
-		this.email = email;
-		this.number = number;
-		this.emprole = emprole;
-		this.userName = userName;
-		this.passWord = passWord;
-		this.login_id = login_id;
-		this.employee_id = employee_id;
-		this.hourly = hourly;
-		this.t_id = t_id;
-		this.python = python;
-		this.java = java;
-		this.javascript = javascript;
-		this.MY_sql = mY_sql;
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public String getFileType() {
+		return fileType;
+	}
+
+	public void setFileType(String fileType) {
+		this.fileType = fileType;
+	}
+
+	public byte[] getData() {
+		return data;
+	}
+
+	public void setData(byte[] data) {
+		this.data = data;
 	}
 
 }
+
+class UploadFileResponse {
+    private String fileName;
+    private String fileDownloadUri;
+    private String fileType;
+    private long size;
+
+    public UploadFileResponse(String fileName, String fileDownloadUri, String fileType, long size) {
+        this.fileName = fileName;
+        this.fileDownloadUri = fileDownloadUri;
+        this.fileType = fileType;
+        this.size = size;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getFileDownloadUri() {
+        return fileDownloadUri;
+    }
+
+    public void setFileDownloadUri(String fileDownloadUri) {
+        this.fileDownloadUri = fileDownloadUri;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
+    public long getSize() {
+        return size;
+    }
+
+    public void setSize(long size) {
+        this.size = size;
+    }
+}
+@Repository
+interface DBFileRepository extends JpaRepository<DBFile, String> {
+
+}
+
+@Service
+ class DBFileStorageService {
+
+    @Autowired
+    private DBFileRepository dbFileRepository;
+
+    public DBFile storeFile(MultipartFile file) throws Exception {
+        // Normalize file name
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+
+        try {
+            // Check if the file's name contains invalid characters
+            if(fileName.contains("..")) {
+                throw new Exception("Sorry! Filename contains invalid path sequence " + fileName);
+            }
+
+            DBFile dbFile = new DBFile(fileName, file.getContentType(), file.getBytes());
+
+            return dbFileRepository.save(dbFile);
+        } catch (IOException ex) {
+            throw new Exception("Could not store file " + fileName + ". Please try again!", ex);
+        }
+    }
+
+    public DBFile getFile(String fileId) throws Exception {
+        return dbFileRepository.findById(fileId)
+                .orElseThrow(() -> new Exception("File not found with id " + fileId));
+    }
+}
+//@RestController
+//class FileController {
+//
+//    private static final Logger logger = LoggerFactory.getLogger(FileController.class);
+//
+//    @Autowired
+//    private DBFileStorageService dbFileStorageService;
+//
+//    @PostMapping("/uploadFile")
+//    public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
+//        DBFile dbFile = dbFileStorageService.storeFile(file);
+//        System.out.println("Here");
+//        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+//                .path("/downloadFile/")
+//                .path(dbFile.getId())
+//                .toUriString();
+//
+//        return new UploadFileResponse(dbFile.getFileName(), fileDownloadUri,
+//                file.getContentType(), file.getSize());
+//    }
+//
+////    @PostMapping("/uploadMultipleFiles")
+////    public List<UploadFileResponse> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
+////        return Arrays.asList(files)
+////                .stream()
+////                .map(file -> uploadFile(file))
+////                .collect(Collectors.toList());
+////    }
+//
+//    @GetMapping("/downloadFile/{fileId}")
+//    public ResponseEntity<Resource> downloadFile(@PathVariable String fileId) throws Exception {
+//        // Load file from database
+//        DBFile dbFile = dbFileStorageService.getFile(fileId);
+//
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.parseMediaType(dbFile.getFileType()))
+//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + dbFile.getFileName() + "\"")
+//                .body(new ByteArrayResource(dbFile.getData()));
+//    }
+//
+//}
 
 @Controller
 
@@ -535,28 +702,57 @@ class EmployeeRestController {
 	DocumentsRepository documentsRepository;
 	@Autowired
 	MessagesRepository messagesRepository;
-//	//this takes all info from the table and persists it to the database
-	/*
-	 * @PostMapping("/employee/register")
-	 * 
-	 * public ModelAndView addEmployee(@ModelAttribute("employee") Employee employee
-	 * ) { this.employeeRepository.saveAndFlush(employee); // check to see if data
-	 * got stored for (Employee e : this.employeeRepository.findAll()) {
-	 * System.out.println(e.toString()); }
-	 * 
-	 * 
-	 * 
-	 * //sendEmail("gavinsgames412@gmail.com", "registered user",
-	 * "you've been registered"); // get next page - add thymeleaf dependency in pom
-	 * ModelAndView mv = new ModelAndView(); mv.setViewName("login"); return mv; }
-	 */
 
+	
+	
+	
+
+//    private static final Logger logger = LoggerFactory.getLogger(FileController.class);
+
+    @Autowired
+    private DBFileStorageService dbFileStorageService;
+
+    @PostMapping("/uploadFile.jsp")
+    public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
+    	
+    	ModelAndView mv = new ModelAndView();
+        DBFile dbFile = dbFileStorageService.storeFile(file);
+    
+        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/downloadFile/")
+                .path(dbFile.getId())
+                .toUriString();
+        mv.setViewName("successfile");
+        return new UploadFileResponse(dbFile.getFileName(), fileDownloadUri,
+                file.getContentType(), file.getSize());
+    }
+
+//    @PostMapping("/uploadMultipleFiles")
+//    public List<UploadFileResponse> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
+//        return Arrays.asList(files)
+//                .stream()
+//                .map(file -> uploadFile(file))
+//                .collect(Collectors.toList());
+//    }
+
+//    @GetMapping("/downloadFile/{fileId}")
+//    public ResponseEntity<Resource> downloadFile(@PathVariable String fileId) throws Exception {
+//        // Load file from database
+//        DBFile dbFile = dbFileStorageService.getFile(fileId);
+//
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.parseMediaType(dbFile.getFileType()))
+//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + dbFile.getFileName() + "\"")
+//                .body(new ByteArrayResource(dbFile.getData()));
+//    }
+//	
+//	
+	
 	@PostMapping("/employee/login")
 
-	// @ModelAttribute gets all data from the pojo person in the database from the
-	// login jsp page
-	public ModelAndView loginEmployee(@ModelAttribute("employee") Employee employee, Model model, HttpSession session) {
 	
+	public ModelAndView loginEmployee(@ModelAttribute("employee") Employee employee, Model model, HttpSession session) {
+		session.isNew();
 		String Hero = "Hero";
 		String Hr = "Hr";
 		String Admin = "Admin";
@@ -567,9 +763,10 @@ class EmployeeRestController {
 		System.out.println(username + ", " + password);
 		// fetch password using username
 		Employee resultSet = (Employee) this.employeeRepository.findByUsername(username);
+		
 		if (resultSet == null) {
 			mv.setViewName("login");
-			model.addAttribute("error", "No such username found");
+			model.addAttribute("error", "No such username or password found");
 		} else {
 			String passwordDB = resultSet.getPasscode();
 			String emproleFromDB = resultSet.getEmprole();
@@ -581,6 +778,39 @@ class EmployeeRestController {
 			if (password.equals(passwordDB)) {
 				if (emproleFromDB.equals(Hero)) {
 					mv.setViewName("hero");
+					int emp_idDB = resultSet.getId();
+					Training rs = (Training) this.trainingRepository.findById(emp_idDB);
+					//trainings
+					String jsFromDB = rs.getJavascript();
+					String javaFromDB = rs.getJava();
+					String pythonFromDB = rs.getPython();
+					String mysqlFromDB = rs.getMY_sql();
+					
+					//from trainings
+					session.setAttribute("pythonFromDB", pythonFromDB);
+					session.setAttribute("javaFromDB", javaFromDB);	
+					session.setAttribute("mysqlFromDB", mysqlFromDB);
+					session.setAttribute("jsFromDB", jsFromDB);
+					
+					
+					Documents resultSetDoc = (Documents) this.documentsRepository.findById(emp_idDB);
+					//documents
+					String policiesFromDB = resultSetDoc.getPolicies();
+					String onboardingFromDB = resultSetDoc.getOnboarding();
+					String assignmentsFromDB = resultSetDoc.getAssignments();
+					
+					//from documents
+					session.setAttribute("assignmentsFromDB", assignmentsFromDB);
+					session.setAttribute("onboardingFromDB",onboardingFromDB);
+					session.setAttribute("policiesFromDB",policiesFromDB);
+
+					
+					System.out.println(emp_idDB);
+					session.setAttribute("emailFromDB", emailFromDB);
+					session.setAttribute("fnameFromDB", fnameFromDB);
+					session.setAttribute("lnameFromDB", lnameFromDB);
+//					model.addAttribute("emailFromDB", emailFromDB);
+					session.setAttribute("userNameFromDB", userNameFromDB);
 				}
 				if (emproleFromDB.equals(Hr)) {
 					mv.setViewName("hr");
@@ -588,12 +818,17 @@ class EmployeeRestController {
 					session.setAttribute("emailFromDB", emailFromDB);
 					session.setAttribute("fnameFromDB", fnameFromDB);
 					session.setAttribute("lnameFromDB", lnameFromDB);
-//					model.addAttribute("emailFromDB", emailFromDB);
+
 					session.setAttribute("userNameFromDB", userNameFromDB);
 				
 				}
 				if (emproleFromDB.equals(Admin)) {
 					mv.setViewName("admin");
+					session.setAttribute("emailFromDB", emailFromDB);
+					session.setAttribute("fnameFromDB", fnameFromDB);
+					session.setAttribute("lnameFromDB", lnameFromDB);
+//					
+					session.setAttribute("userNameFromDB", userNameFromDB);
 				}
 			} else {
 				mv.setViewName("login");
@@ -604,8 +839,10 @@ class EmployeeRestController {
 		}
 		return mv;
 	}
-	// @GetMapping("abc.html")
-	// public
+
+	
+	
+	
 	@PostMapping("/employee/lookupUser")
 	public ModelAndView lookupUser(@ModelAttribute("employee") Employee employee, Model model, HttpSession session) {
 		ModelAndView mv = new ModelAndView();
@@ -668,6 +905,7 @@ class EmployeeRestController {
 				model.addAttribute("assignmentsFromDB", assignmentsFromDB);
 				model.addAttribute("onboardingFromDB",onboardingFromDB);
 				model.addAttribute("policiesFromDB",policiesFromDB);
+			
 			}
 			
 		}
@@ -753,6 +991,109 @@ class EmployeeRestController {
 		return mv;
 	}
 	
+	
+@PostMapping("/employee/lookupuserother")
+	
+	public ModelAndView lookupEmployeeOtherUser(@ModelAttribute("employee") Employee employee, Model model,HttpSession session) { 
+		
+	ModelAndView mv = new ModelAndView();
+	String username = employee.getUsername();
+	
+	Employee rs = (Employee) this.employeeRepository.findByUsername(username);
+	if(rs == null) {
+		mv.setViewName("hr");
+	} else {
+		
+		
+		//employee
+		String emproleFromDB = rs.getEmprole();
+		String fnameFromDB = rs.getFname();
+		String lnameFromDB = rs.getLname();
+		String userNameFromDB = rs.getUsername();
+		String emailFromDB = rs.getEmail();
+	
+		String phonenumberFromDB = rs.getPhonenumber();
+		
+		
+	
+		if (username.equals(userNameFromDB)) {
+			mv.setViewName("lookupuserother");
+			//from employee
+			model.addAttribute("fnameFromDB", fnameFromDB);
+			model.addAttribute("lnameFromDB", lnameFromDB);
+			model.addAttribute("emailFromDB", emailFromDB);
+			model.addAttribute("userNameFromDB", userNameFromDB);
+		
+			model.addAttribute("phonenumberFromDB", phonenumberFromDB);
+			model.addAttribute("emproleFromDB", emproleFromDB);
+			
+		
+		}
+		
+	}
+	return mv;
+}
+	
+	
+	
+	
+@PostMapping("/employee/lookupother")
+	
+	public ModelAndView lookupEmployeeOther(@ModelAttribute("employee") Employee employee, Model model,HttpSession session) { 
+		
+		ModelAndView mv = new ModelAndView();
+		
+		String fname = employee.getFname();
+		String lname = employee.getLname();
+		
+		
+		
+		Employee resultSet = (Employee) this.employeeRepository.findByFname(fname);
+		System.out.println(fname + " ," + lname);
+
+//			Training training = (Training) iterator.next();
+			
+//			System.out.println("training: " + training);
+//		}
+		if(resultSet == null) {
+			mv.setViewName("employeecontacts");
+		} else {
+			int emp_idDB = resultSet.getId();
+			Training rs = (Training) this.trainingRepository.findById(emp_idDB);
+			
+			Documents resultSetDoc = (Documents) this.documentsRepository.findById(emp_idDB);
+			//employee
+			String emproleFromDB = resultSet.getEmprole();
+			String fnameFromDB = resultSet.getFname();
+			String lnameFromDB = resultSet.getLname();
+			String userNameFromDB = resultSet.getUsername();
+			String emailFromDB = resultSet.getEmail();
+			String phonenumberFromDB = resultSet.getPhonenumber();
+			
+			
+
+	
+
+			
+			System.out.println(emproleFromDB);
+			if (fname.equals(fnameFromDB) && lname.equals(lnameFromDB)) {
+				mv.setViewName("lookupother");
+				//from employee
+				model.addAttribute("fnameFromDB", fnameFromDB);
+				model.addAttribute("lnameFromDB", lnameFromDB);
+				model.addAttribute("emailFromDB", emailFromDB);
+				model.addAttribute("userNameFromDB", userNameFromDB);
+				model.addAttribute("phonenumberFromDB",phonenumberFromDB);
+				model.addAttribute("emproleFromDB",emproleFromDB);
+			
+			}
+			
+		}
+		return mv;
+	}
+	
+	
+	
 	@PostMapping("/employee/new")
 	public ModelAndView newEmployee(Employee newEmployee, Training training, Documents documents, Model model, HttpSession session) {
 		ModelAndView mv = new ModelAndView();
@@ -776,19 +1117,7 @@ class EmployeeRestController {
 		
 		
 		mv.setViewName("newEmployeeTrainings");
-//		Employee rs = (Employee) this.employeeRepository.findByUsername(username);
-//		
-//		
-//		rs.setUsername(username);
-//		rs.setPasscode(password);
-//		rs.setFname(fname);
-//		rs.setLname(lname);
-//		rs.setEmail(email);
-//		rs.setPhonenumber(phonenumber);
-//		rs.setEmprole(emprole);
-//		rs.setHourly(hourly);
-//		
-//		
+	
 		return mv;
 	}
 	@PostMapping("/employee/newtraining")
@@ -829,7 +1158,7 @@ class EmployeeRestController {
 		System.out.println(id);
 		document.setId(id);
 		documentsRepository.save(document);
-		mv.setViewName("hr");
+		mv.setViewName("admin");
 		
 		
 		
@@ -991,7 +1320,7 @@ public ModelAndView updateDocuments(Documents documents) {
                .findByUsername(deleteEmployee.getUsername());
   
        if(employee != null) {
-    	   mv.setViewName("hr");
+    	   mv.setViewName("admin");
     	   employee.setFname(deleteEmployee.getFname());
            employee.setLname(deleteEmployee.getLname());
            employee.setEmail(deleteEmployee.getEmail());
@@ -1022,20 +1351,58 @@ public ModelAndView updateDocuments(Documents documents) {
 	return mv;
        
    }
-    
-    @PostMapping("/GetWebMessage/hero")
-    public ModelAndView messegeBoard(@ModelAttribute("messages") Messages messages) {
+    @PostMapping("/logout")
+    public ModelAndView logout(HttpSession session) {
     	ModelAndView mv = new ModelAndView();
-
-    	messages.setMessage_from_hr(messages.getMessage_from_hr());
-    
     	
     	
+    	session.invalidate();
     	
-    
-    	messagesRepository.save(messages);
-    	
-    	
+    	mv.setViewName("login");
     	return mv;
+    	
     }
+//    @PostMapping("/GetWebMessage/hero")
+//    public ModelAndView messegeBoard(@ModelAttribute("messages") Messages messagesFromHR, Model model) {
+//    	
+//    	
+//    	ModelAndView mv = new ModelAndView();
+//    	
+//    	int message_id_hr = messagesFromHR.getId();
+//    	String message_from_hr = messagesFromHR.getMessage_from_hr();
+//
+//    	messagesFromHR.setMessage_from_hr(message_from_hr);
+//    	model.addAttribute("message", message_from_hr);
+//    	System.out.println(message_from_hr);
+//    
+//    	
+//    	String username = newEmployee.getUsername();
+//		String password = newEmployee.getPasscode();
+//		String fname = newEmployee.getFname();
+//		String lname = newEmployee.getLname();
+//		String email = newEmployee.getEmail();
+//		String phonenumber = newEmployee.getPhonenumber();
+//		String emprole = newEmployee.getEmprole();
+//		
+//		int hourly = newEmployee.getHourly();
+//		
+//		
+//		System.out.println(username);
+//		employeeRepository.save(newEmployee);
+//    	
+//    
+//    	messagesRepository.save(messagesFromHR);
+//    	
+//    	mv.setViewName("hr");
+//    	
+//    	return mv;
+//    }
+    
+    @PostMapping("uploadfile")
+    
+    public void uploadFile() {
+    	
+    }
+    
+    
 }

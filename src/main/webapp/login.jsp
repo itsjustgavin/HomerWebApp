@@ -7,7 +7,9 @@
 <title>Insert title here</title>
 </head>
 <body>
-${error}
+
+<h1>Please log in</h1>
+<p style="color:red">${error}</p>
 <form action = "/employee/login" method ="post">
 	<table>
 		<tr><td>Username:</td><td><input type="text" name="username"/></td></tr>
