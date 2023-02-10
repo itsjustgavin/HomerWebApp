@@ -3,71 +3,156 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<title>Hero look up self</title>
+<style>
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.center {
+margin: auto;
+padding: auto;
+text-align: center;
+}
+th, td {
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #D6EEEE;
+}
+.navstuff {
+position: relative;
+display: inline-block;
+margin-left: 30%;
+margin-top: 0;
+margin-bottom: 0;
+overflow: hidden;
+}
+.navstuff a.active {
+  background-color: #04AA6D;
+  color: white;
+}
+.navstuff  a:hover {
+  background-color: #d9534f;
+  color: white;
+}
+
+.navstuff a {
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+ .container {
+margin-left: 35%;
+}
+#TekHeroesLogo1 { width: 10%;
+position: relative;
+display: inline-block;
+z-index: 1;
+
+			
+}
+#printButton{
+
+}
+
+#body {
+position: relative;
+  min-height: 100vh;
+}
+</style>
 </head>
-<body>
+<body id="body">
+
+<%@ include file = "heroheader.jsp" %>
+
+
+
+
+
+
+<h1 class="center">Training and Documents</h1>
+
+
+
+<div class="container-fluid">
 
 	<h1>Employee info</h1>
 	<form>
-		<table border="2px">
+		<table border="2px" colspan='2' align='center'>
 			<tr>
 				<td>First Name</td>
-				<td>${fnameFromDB }</td>
+				<td style="width:60%">${fnameFromDB }</td>
 			</tr>
 			<tr>
 				<td>Last Name</td>
-				<td>${lnameFromDB }</td>
+				<td style="width:60%">${lnameFromDB }</td>
 			</tr>
 			<tr>
 				<td>Email</td>
-				<td>${emailFromDB }</td>
+				<td style="width:60%">${emailFromDB }</td>
 			</tr>
 			<tr>
 				<td>Username</td>
-				<td>${userNameFromDB }</td>
+				<td style="width:60%">${userNameFromDB }</td>
 		</table>
 	</form>
 	<h1>Employee Training</h1>
-	<form>
-		<table>
+	<form >
+		<table border="2px" colspan='2' align='center'>
 			<tr>
 				<td>Python:</td>
-				<td>${pythonFromDB }</td>
+				<td style="width:60%">${pythonFromDB }</td>
 			</tr>
 			<tr>
 				<td>Java:</td>
-				<td>${javaFromDB }</td>
+				<td style="width:60%">${javaFromDB }</td>
 			</tr>
 			<tr>
 				<td>Mysql:</td>
-				<td>${mysqlFromDB }</td>
+				<td style="width:60%">${mysqlFromDB }</td>
 			</tr>
 			<tr>
 				<td>Javascript:</td>
-				<td>${jsFromDB }</td>
+				<td style="width:60%">${jsFromDB }</td>
 			</tr>
 		</table>
 	</form>
 	<h1>Employee Documents</h1>
 	<form>
-		<table>
+		<table border="2px" colspan='2' align='center'>
 			<tr>
 				<td>Onboarding:</td>
-				<td>${onboardingFromDB }</td>
+				<td style="width:60%">${onboardingFromDB }</td>
 			</tr>
 			<tr>
 				<td>Assignments:</td>
-				<td>${assignmentsFromDB }</td>
+				<td style="width:60%">${assignmentsFromDB }</td>
 			</tr>
 			<tr>
 				<td>Policies:</td>
-				<td>${policiesFromDB }</td>
+				<td style="width:60%">${policiesFromDB }</td>
 			</tr>
 
 		</table>
 	</form>
-<a href="/hero.jsp"><button>Return</button></a>
+	
+		<div id="printButton" style="margin-top: 2%"><button class="bg-danger btn btn-lg text-light" onclick="window.print()">Print this page</button></div>
+	
+	</div>
 
+
+<footer>
+<%@ include file = "footer.jsp" %></footer>
 </body>
 </html>

@@ -5,8 +5,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.spi.FileSystemProvider;
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -51,7 +54,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
@@ -94,153 +99,7 @@ public class HomerWebAppApplication {
 
 }
 
-@Entity
-@Table(name = "employee")
-class Employee {
-	// variables
-	@OneToMany(mappedBy="employee")
-	private Set<Documents> docs;
-	
-	@OneToMany(mappedBy="employee")
-	private Set<Training> trainings;;
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int employee_id;
-	@Column
-	private String fname;
-	@Column
-	private String lname;
-	@Column
-	private String email;
-	@Column
-	private String emprole;
-	@Column
-	private String phonenumber;
-	@Column
-	private int hourly;
-	@Column
-	private String username;
-	@Column
-	private String passcode;
 
-//constructor for employees
-	public Employee(String fname, String lname, String email, String emprole, String phonenumber,
-			int hourly, String username, String passcode) {
-		super();
-		this.employee_id = employee_id;
-		this.fname = fname;
-		this.lname = lname;
-		this.email = email;
-		this.emprole = emprole;
-		this.phonenumber = phonenumber;
-		this.hourly = hourly;
-		this.username = username;
-		this.passcode = passcode;
-
-	}
-
-	public Employee() {
-
-	}
-	public Set<Documents> getDocs() {
-		return docs;
-	}
-	
-
-	public void setDocs(Set<Documents> docs) {
-		this.docs = docs;
-	}
-
-	public Set<Training> getTrainings() {
-		return trainings;
-	}
-
-	public void setTrainings(Set<Training> trainings) {
-		this.trainings = trainings;
-	}
-
-	public int getId() {
-		return employee_id;
-	}
-
-	public void setId(int employee_id) {
-		this.employee_id = employee_id;
-	}
-
-	public String getFname() {
-		return fname;
-	}
-
-	public void setFname(String fname) {
-		this.fname = fname;
-	}
-
-	public String getLname() {
-		return lname;
-	}
-
-	public void setLname(String lname) {
-		this.lname = lname;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getEmprole() {
-		return emprole;
-	}
-
-	public void setEmprole(String emprole) {
-		this.emprole = emprole;
-	}
-
-	public String getPhonenumber() {
-		return phonenumber;
-	}
-
-	public void setPhonenumber(String phonenumber) {
-		this.phonenumber = phonenumber;
-	}
-
-	public int getHourly() {
-		return hourly;
-	}
-
-	public void setHourly(int hourly) {
-		this.hourly = hourly;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPasscode() {
-		return passcode;
-	}
-
-	public void setPasscode(String passcode) {
-		this.passcode = passcode;
-	}
-
-
-	@Override
-	public String toString() {
-		return "Employee [employee_id=" + employee_id + ", fname=" + fname + ", lname=" + lname + ", email=" + email
-				+ ", emprole=" + emprole + ", phonenumber=" + phonenumber + ", hourly=" + hourly + ", username="
-				+ username + ", passcode=" + passcode + "]";
-	}
-
-
-}
 
 // Jpa is crud operations, need POJO, Primary datatype in db
 
@@ -253,22 +112,23 @@ interface EmployeeRepository extends JpaRepository<Employee, Long> {
 	
 }
 
-//@Component
-//class EmployeeCommandLineRunner implements CommandLineRunner {
-//
-//	@Autowired
-//	EmployeeRepository employeeRepository;
-//	
-//	
-//	@Override
-//	public void run(String... args) throws Exception {
-//		for (Employee e : this.employeeRepository.findAll()) {
-//			System.out.println(e.toString());
-//	
-//		
-//		}
-//	}
-//}
+@Component
+class EmployeeCommandLineRunner implements CommandLineRunner {
+
+	@Autowired
+	EmployeeRepository employeeRepository;
+	
+	
+	@Override
+	public void run(String... args) throws Exception {
+		for (Employee e : this.employeeRepository.findAll()) {
+			System.out.println(e.toString());
+			System.out.println(e.getFname());
+	
+		
+		}
+	}
+}
 
 @Entity
 @Table(name = "training")
@@ -722,11 +582,17 @@ class EmployeeRestController {
                 .path("/downloadFile/")
                 .path(dbFile.getId())
                 .toUriString();
-        mv.setViewName("successfile");
+        mv.setViewName("successfile.jsp");
         return new UploadFileResponse(dbFile.getFileName(), fileDownloadUri,
                 file.getContentType(), file.getSize());
     }
 
+    
+    
+    
+    
+    
+    
 //    @PostMapping("/uploadMultipleFiles")
 //    public List<UploadFileResponse> uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
 //        return Arrays.asList(files)
@@ -747,6 +613,18 @@ class EmployeeRestController {
 //    }
 //	
 //	
+    
+    
+    
+    @ResponseBody
+    @GetMapping("/employee/employeeAll")
+    public ModelAndView allEmployees(Employee employee, Model model) {
+    	ModelAndView mv = new ModelAndView();
+    	List<Employee> allEmployees = employeeRepository.findAll();
+    	
+    	model.addAttribute("allEmployees",allEmployees);
+    	return mv;
+    }
 	
 	@PostMapping("/employee/login")
 
@@ -774,6 +652,7 @@ class EmployeeRestController {
 			String lnameFromDB = resultSet.getLname();
 			String userNameFromDB = resultSet.getUsername();
 			String emailFromDB = resultSet.getEmail();
+			String phonenumberFromDB = resultSet.getPhonenumber();
 
 			if (password.equals(passwordDB)) {
 				if (emproleFromDB.equals(Hero)) {
@@ -809,8 +688,9 @@ class EmployeeRestController {
 					session.setAttribute("emailFromDB", emailFromDB);
 					session.setAttribute("fnameFromDB", fnameFromDB);
 					session.setAttribute("lnameFromDB", lnameFromDB);
-//					model.addAttribute("emailFromDB", emailFromDB);
 					session.setAttribute("userNameFromDB", userNameFromDB);
+					session.setAttribute("emproleFromDB", emproleFromDB);
+					
 				}
 				if (emproleFromDB.equals(Hr)) {
 					mv.setViewName("hr");
@@ -818,8 +698,9 @@ class EmployeeRestController {
 					session.setAttribute("emailFromDB", emailFromDB);
 					session.setAttribute("fnameFromDB", fnameFromDB);
 					session.setAttribute("lnameFromDB", lnameFromDB);
-
+					session.setAttribute("phonenumberFromDB", phonenumberFromDB);
 					session.setAttribute("userNameFromDB", userNameFromDB);
+					session.setAttribute("emproleFromDB", emproleFromDB);
 				
 				}
 				if (emproleFromDB.equals(Admin)) {
@@ -827,6 +708,7 @@ class EmployeeRestController {
 					session.setAttribute("emailFromDB", emailFromDB);
 					session.setAttribute("fnameFromDB", fnameFromDB);
 					session.setAttribute("lnameFromDB", lnameFromDB);
+					session.setAttribute("emproleFromDB", emproleFromDB);
 //					
 					session.setAttribute("userNameFromDB", userNameFromDB);
 				}
@@ -865,7 +747,8 @@ class EmployeeRestController {
 			int hourlyFromDB = rs.getHourly();
 			int emp_idFromDB = rs.getId();
 			String phonenumberFromDB = rs.getPhonenumber();
-			
+			String passwordFromDB = rs.getPasscode();
+			Date onboarding_dateFromDB = rs.getOnboarding_date();
 			
 			//trainings
 			String jsFromDB = rs1.getJavascript();
@@ -890,10 +773,12 @@ class EmployeeRestController {
 				model.addAttribute("lnameFromDB", lnameFromDB);
 				model.addAttribute("emailFromDB", emailFromDB);
 				model.addAttribute("userNameFromDB", userNameFromDB);
+				model.addAttribute("passwordFromDB", passwordFromDB);
 				model.addAttribute("hourlyFromDB", hourlyFromDB);
 				model.addAttribute("phonenumberFromDB", phonenumberFromDB);
 				model.addAttribute("emproleFromDB", emproleFromDB);
-				model.addAttribute("emp_idFromDB", emp_idFromDB);				
+				model.addAttribute("emp_idFromDB", emp_idFromDB);	
+				model.addAttribute("onboarding_dateFromDB", onboarding_dateFromDB);
 				//from trainings
 				model.addAttribute("pythonFromDB", pythonFromDB);
 				model.addAttribute("javaFromDB", javaFromDB);	
@@ -911,6 +796,107 @@ class EmployeeRestController {
 		}
 		return mv;
 	}
+	
+	
+	
+	
+	@GetMapping("/employee/searchAllAjax")
+	@ResponseBody
+	public ModelAndView searchAllEmployeeAjax(Employee employee, Model model, HttpServletRequest req) {
+		ModelAndView mv = new ModelAndView();
+	
+		System.out.println("Here");
+		List<Employee> allEmployees = employeeRepository.findAll();
+	
+		req.setAttribute("allEmployees", allEmployees);
+		return mv;
+		
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	@PostMapping("/employee/searchallfromhero")
+	public ModelAndView searchallfromHero(@ModelAttribute("employee") Employee employee, Model model, HttpServletRequest req) {
+		List<Employee> allEmployees = employeeRepository.findAll();
+
+
+		
+	
+		req.setAttribute("allEmployees", allEmployees);
+		ModelAndView mv = new ModelAndView();
+	
+	
+		mv.setViewName("searchallfromhero");
+		return mv;
+		}
+	
+	
+	
+	
+	@PostMapping("/employee/searchallfromhr")
+	public ModelAndView searchallfromHr(@ModelAttribute("employee") Employee employee, Model model, HttpServletRequest req) {
+		List<Employee> allEmployees = employeeRepository.findAll();
+
+
+		
+	
+		req.setAttribute("allEmployees", allEmployees);
+		ModelAndView mv = new ModelAndView();
+	
+	
+		mv.setViewName("searchallfromhr");
+		return mv;
+		}
+	
+	
+	
+	
+	@PostMapping("/employee/searchallpractice")
+	public ModelAndView searchAllEmployees(@ModelAttribute("employee") Employee employee, Model model, HttpServletRequest req) {
+		List<Employee> allEmployees = employeeRepository.findAll();
+
+
+		
+	
+		req.setAttribute("allEmployees", allEmployees);
+		ModelAndView mv = new ModelAndView();
+	
+	
+		mv.setViewName("searchallpractice");
+		return mv;
+		}
+	
+	
+		
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	@PostMapping("/employee/lookup")
 	
 	public ModelAndView lookupEmployee(@ModelAttribute("employee") Employee employee, Model model,HttpSession session) { 
@@ -941,10 +927,13 @@ class EmployeeRestController {
 			String fnameFromDB = resultSet.getFname();
 			String lnameFromDB = resultSet.getLname();
 			String userNameFromDB = resultSet.getUsername();
+			String passwordFromDB = resultSet.getPasscode();
 			String emailFromDB = resultSet.getEmail();
 			String phonenumberFromDB = resultSet.getPhonenumber();
 			int hourlyFromDB = resultSet.getHourly();
 			int emp_idFromDB = resultSet.getId();
+			Date onboarding_dateFromDB = resultSet.getOnboarding_date();
+			
 			
 			//trainings
 			String jsFromDB = rs.getJavascript();
@@ -968,11 +957,12 @@ class EmployeeRestController {
 				model.addAttribute("lnameFromDB", lnameFromDB);
 				model.addAttribute("emailFromDB", emailFromDB);
 				model.addAttribute("userNameFromDB", userNameFromDB);
+				model.addAttribute("passwordFromDB", passwordFromDB);
 				model.addAttribute("phonenumberFromDB",phonenumberFromDB);
 				model.addAttribute("emproleFromDB",emproleFromDB);
 				model.addAttribute("hourlyFromDB",hourlyFromDB);
 				model.addAttribute("emp_idFromDB", emp_idFromDB);
-			
+				model.addAttribute("onboarding_dateFromDB", onboarding_dateFromDB);
 				
 				//from trainings
 				model.addAttribute("pythonFromDB", pythonFromDB);
@@ -1011,22 +1001,22 @@ class EmployeeRestController {
 		String lnameFromDB = rs.getLname();
 		String userNameFromDB = rs.getUsername();
 		String emailFromDB = rs.getEmail();
-	
+		String passwordFromDB = rs.getPasscode();
 		String phonenumberFromDB = rs.getPhonenumber();
-		
+		Date onboarding_dateFromDB = rs.getOnboarding_date();
 		
 	
 		if (username.equals(userNameFromDB)) {
-			mv.setViewName("lookupuserother");
+			mv.setViewName("lookupother");
 			//from employee
 			model.addAttribute("fnameFromDB", fnameFromDB);
 			model.addAttribute("lnameFromDB", lnameFromDB);
 			model.addAttribute("emailFromDB", emailFromDB);
 			model.addAttribute("userNameFromDB", userNameFromDB);
-		
+			model.addAttribute("passwordFromDB", passwordFromDB);
 			model.addAttribute("phonenumberFromDB", phonenumberFromDB);
 			model.addAttribute("emproleFromDB", emproleFromDB);
-			
+			model.addAttribute("onboarding_dateFromDB", onboarding_dateFromDB);
 		
 		}
 		
@@ -1069,8 +1059,8 @@ class EmployeeRestController {
 			String userNameFromDB = resultSet.getUsername();
 			String emailFromDB = resultSet.getEmail();
 			String phonenumberFromDB = resultSet.getPhonenumber();
-			
-			
+			String passwordFromDB = resultSet.getPasscode();
+			Date onboarding_dateFromDB = resultSet.getOnboarding_date();
 
 	
 
@@ -1083,9 +1073,10 @@ class EmployeeRestController {
 				model.addAttribute("lnameFromDB", lnameFromDB);
 				model.addAttribute("emailFromDB", emailFromDB);
 				model.addAttribute("userNameFromDB", userNameFromDB);
+				model.addAttribute("passwordFromDB", passwordFromDB);
 				model.addAttribute("phonenumberFromDB",phonenumberFromDB);
 				model.addAttribute("emproleFromDB",emproleFromDB);
-			
+				model.addAttribute("onboarding_dateFromDB", onboarding_dateFromDB);
 			}
 			
 		}
@@ -1106,7 +1097,7 @@ class EmployeeRestController {
 		String emprole = newEmployee.getEmprole();
 		
 		int hourly = newEmployee.getHourly();
-		
+		Date onboarding_date = newEmployee.getOnboarding_date();
 		
 		System.out.println(username);
 		employeeRepository.save(newEmployee);
@@ -1166,6 +1157,23 @@ class EmployeeRestController {
 		return mv;
 	}
 	
+	
+	@PostMapping("/employee/updateLogin")
+	public ModelAndView updateLogin(Employee employee) {
+		ModelAndView mv = new ModelAndView();
+		String username = employee.getUsername();
+		String passcode = employee.getPasscode();
+		
+		Employee rs = (Employee) this.employeeRepository.findByUsername(username);
+		
+		employee.setPasscode(passcode);
+		employeeRepository.save(employee);
+		
+		return mv;
+		
+	}
+
+
 	@PostMapping("/employee/updatedEmployee")
 	 public ModelAndView updateEmployee(Employee savedEmployee, Training training, Documents documents, Model model, HttpSession session) {
 		ModelAndView mv = new ModelAndView();
@@ -1174,7 +1182,8 @@ class EmployeeRestController {
 		
 		Employee rs = (Employee) this.employeeRepository.findByUsername(username);
 		System.out.println(username);
-		
+		String password = rs.getPasscode();
+		System.out.println(password);
 		int emp_id = rs.getId();
     	Training resultSet = (Training) this.trainingRepository.findById(emp_id);
     	Documents resultSetDoc = (Documents) this.documentsRepository.findById(emp_id);
@@ -1187,6 +1196,7 @@ class EmployeeRestController {
     	String javascript = resultSet.getJavascript();
     	String my_sql = resultSet.getMY_sql();
     	
+    	
      System.out.println(emp_id);
         if(rs != null && resultSet !=null) {  
         	
@@ -1197,7 +1207,10 @@ class EmployeeRestController {
         	rs.setEmprole(savedEmployee.getEmprole());
         	rs.setPhonenumber(savedEmployee.getPhonenumber());
         	rs.setUsername(savedEmployee.getUsername());
+        	rs.setPasscode(savedEmployee.getPasscode());
+        	rs.setOnboarding_date(savedEmployee.getOnboarding_date());
         	
+        	System.out.println("Here");
         	resultSet.setId(training.getId());
         	resultSet.setJava(training.getJava());
         	resultSet.setJavascript(training.getJavascript());
@@ -1210,8 +1223,7 @@ class EmployeeRestController {
         	resultSetDoc.setId(documents.getId());
         	resultSetDoc.setOnboarding(documents.getOnboarding());
         	resultSetDoc.setPolicies(documents.getPolicies());
-        	
-        	
+        	model.addAttribute("password", password);
         	model.addAttribute("username",username);
         	model.addAttribute("id",emp_id);
         	model.addAttribute("python",python);

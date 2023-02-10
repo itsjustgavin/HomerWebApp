@@ -3,36 +3,101 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src=https://code.jquery.com/jquery-3.6.0.js></script>
 
+<title>HR Dashboard</title>
 <style>
-.paginator {
-	display: none;
+
+
+
+table {
+  border-collapse: collapse;
+  width: 100%;
 }
 
-.paginator-active {
-	display: inherit;
+th, td {
+  text-align: left;
+  padding: 8px;
 }
+
+tr:nth-child(even) {
+  background-color: #D6EEEE;
+}
+
+#formDiv{
+positon: absolute;
+padding-bottom: 2%;
+}
+
+
+#body {
+position: relative;
+  min-height: 100vh;
+}
+ .container {
+margin-left: 35%;
+}
+#footerDiv {
+
+
+}
+#printDiv {
+position: absolute;
+padding-bottom: 1%;
+z-index: 2;
+
+}
+#printButton {
+position: absolute;
+
+z-index: 2;
+}
+
+
+#returnDiv{
+position: absolute;
+margin-top: 3%;
+z-index: 2;
+}
+#TekHeroesLogo1 { width: 10%;
+				height: 10%;
+				margin-right:100%;
+			
+}
+
+/
+#TekHeroesLogo2 {
+left: 0;
+right: 0;
+padding: 0;
+margin:0;
+
+	
+}
+
+
 </style>
-<meta charset="UTF-8">
-<title>Document</title>
-<link rel="stylesheet"
-	href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
 </head>
-<body>
 
+<!-- Print button on page, print button on modal, tabulate table for employee info, add modal button to end of each employee row for more details with modal -->
+<body id="body">
+<%@ include file = "hrheader.jsp" %>
+<div id="formDiv"class="container-fluid">
 	<h1>Employee info</h1>
 	<form>
-		<table border="2px">
+		<table border="2px" colspan='2' align='center'>
 			<tr>
 				<td>First Name</td>
-				<td>${fnameFromDB }</td>
+				<td style="width:60%">${fnameFromDB }</td>
 			</tr>
 			<tr>
 				<td>Last Name</td>
-				<td>${lnameFromDB }</td>
+				<td style="width:60%">${lnameFromDB }</td>
 			</tr>
 			<tr>
 				<td>Email</td>
@@ -40,67 +105,72 @@
 			</tr>
 			<tr>
 				<td>Username</td>
-				<td>${userNameFromDB }</td>
+				<td style="width:60%">${userNameFromDB }</td>
 				</tr>
 				<tr><td>Employee Role:</td>
-				<td>${emproleFromDB}</td>
+				<td style="width:60%">${emproleFromDB}</td>
 				</tr>
 				<tr>
 				<td>Phone number: </td>
-				<td>${phonenumberFromDB }</td>
+				<td style="width:60%">${phonenumberFromDB }</td>
 				</tr>
 				<tr>
 				<td>Employee ID:</td>
-				<td>${emp_idFromDB}</td>
+				<td style="width:60%">${emp_idFromDB}</td>
 				</tr>
 				<tr>
 				<td>Hourly:</td>
-				<td>${hourlyFromDB}</td>
+				<td style="width:60%">${hourlyFromDB}</td>
 				</tr>
+				<tr>
+				<td>Onboarding Date:</td>
+				<td style="width:60%">${onboarding_dateFromDB}</td>
+				</tr>
+				
 		</table>
 	</form>
 	<h1>Employee Training</h1>
 	<form>
-		<table>
+		<table border="2px" colspan='2' align='center'>
 			<tr>
 				<td>Python:</td>
-				<td>${pythonFromDB }</td>
+				<td style="width:60%">${pythonFromDB }</td>
 			</tr>
 			<tr>
 				<td>Java:</td>
-				<td>${javaFromDB }</td>
+				<td style="width:60%">${javaFromDB }</td>
 			</tr>
 			<tr>
 				<td>Mysql:</td>
-				<td>${mysqlFromDB }</td>
+				<td style="width:60%">${mysqlFromDB }</td>
 			</tr>
 			<tr>
 				<td>Javascript:</td>
-				<td>${jsFromDB }</td>
+				<td style="width:60%">${jsFromDB }</td>
 			</tr>
 		</table>
 	</form>
 	<h1>Employee Documents</h1>
 	<form>
-		<table>
+		<table border="2px" colspan='2' align='center'>
 			<tr>
 				<td>Onboarding:</td>
-				<td>${onboardingFromDB }</td>
+				<td style="width:60%">${onboardingFromDB }</td>
 			</tr>
 			<tr>
 				<td>Assignments:</td>
-				<td>${assignmentsFromDB }</td>
+				<td style="width:60%">${assignmentsFromDB }</td>
 			</tr>
 			<tr>
 				<td>Policies:</td>
-				<td>${policiesFromDB }</td>
+				<td style="width:60%">${policiesFromDB }</td>
 			</tr>
 
 		</table>
 	</form>
 
 
-	<button type="button" class="btn btn-info btn-lg" data-toggle="modal"
+	<button type="button" class="btn btn-info btn-lg bg-danger" data-toggle="modal"
 		data-target="#exampleModal">Update Employee</button>
 	<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
 		aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -121,6 +191,9 @@
 							<tr>
 								<td>Employee Username: <input type="text" name="username"
 									value="${userNameFromDB}" /></td>
+							</tr>
+							<tr>
+							<td>Employee Password: <input type="text" name="passcode" value="${passwordFromDB }" /></td>
 							</tr>
 							<tr>
 								<td>Employee First Name: <input type="text" name="fname"
@@ -148,7 +221,11 @@
 									name="hourly" value="${hourlyFromDB }" /></td>
 							</tr>
 
-
+								<tr>
+				<td>Employee Onboarding Date:</td>
+				</tr><tr><td><input type="date" name="onboarding_date"></td>
+				</tr>
+			
 
 
 
@@ -209,7 +286,7 @@
 	</div>
 
 
-
+</div>
 	<script src="https://code.jquery.com/jquery-3.5.1.min.js"
 		integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
 		crossorigin="anonymous"></script>
@@ -225,7 +302,21 @@ $('body').on('click','.paginator-button', evt => {
     
 });
   </script>
+  <div id="printDiv"class="container-fluid">
+	<div><button id="printButton"class="bg-danger btn btn-lg text-light" onclick="window.print()">Print this page</button></div></div>
   
-  <a href="/hr.jsp"><button>Return</button></a>
+  
+  <div id="returnDiv">
+<div id="containerButton"class="container-fluid">
+	 <a href="/hr.jsp"><button class="btn btn-info btn-lg bg-danger">Return</button></a>
+
+</div>
+</div>
+<br>
+<div id="footerDiv"></div>
+<%@ include file = "footer.jsp" %>
+
+  
+ 
 </body>
 </html>

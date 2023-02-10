@@ -31,5 +31,9 @@
 					<td><input type="Submit" value="SUBMIT" value="register" /></td>
 				</tr>
 			</table></form>
+			
+		<%@ include file = "footer.jsp" %>
+
+
 </body>
 </html>

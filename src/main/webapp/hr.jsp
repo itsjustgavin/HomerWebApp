@@ -4,16 +4,43 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-<title>Insert title here</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link
+	href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
+	rel="stylesheet">
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<link rel="stylesheet"
+	href="http://cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css">
+<script type="text/javascript"
+	src="http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript"
+	src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+  
+<title>HR Dashboard</title>
+<style>
+
+ .container {
+margin-left: 35%;
+}
+#TekHeroesLogo1 { width: 10%;
+				height: 10%;
+				margin-right:100%;
+			
+}
+
+
+</style>
 </head>
 <body>
-
-	<h2>Welcome ${userNameFromDB }</h2>
+<%@ include file = "hrheader.jsp" %>
+<div class="container-fluid">
 	<!-- Need to log in a user first, need viewdata servlet -->
-	<form>
+<%-- 	<form>
 		<table border="2px">
 			<tr>
 				<td>First Name</td>
@@ -32,11 +59,22 @@
 			</tr>
 		</table>
 	</form>
+	</div> --%>
+	</div>
+
+	<div class="container-fluid">
 <h2>${updated }</h2>
 	<!-- Employee CRUD START -->
+	<div class="container">	<h2>Look up employee by first and last name</h2>
+	<!-- Trigger the modal with a button -->
 	
-	<h3>Look up employee by first and last name</h3>
-	<form action="/employee/lookup" method="post">
+	 <button type="button" class="btn btn-info btn-lg bg-danger" data-toggle="modal" data-target="#myModalNames" >Look up by Name</button>
+	  <!-- Modal -->
+	   <div class="modal fade" id="myModalNames" role="dialog">
+    <div class="modal-dialog model-sm">
+      <div class="modal-content bg-danger border border-dark text-light text-center">
+      <h2>Look up Employee by first and last name</h2>
+    <form action="/employee/lookup" method="post">
 		<table>
 			<tr>
 				<td>Look up Employee by first name</td>
@@ -48,196 +86,72 @@
 				<td><input type="text" name="lname"></td>
 			</tr>
 			<tr>
-				<td><input type="Submit" value="SUBMIT" /></td>
+				<td><input class =" btn btn-s bg-dark text-light"type="Submit" value="SUBMIT" /></td>
 			</tr>
 		</table>
 	</form>
+	</div>
+    </div>
+    </div>
+	
+	</div>
+</div>
 	<div class="container">
   <h2>Look up user</h2>
   <!-- Trigger the modal with a button -->
  
-  <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" >Look up by User</button>
+  <button type="button" class="btn btn-info btn-lg bg-danger" data-toggle="modal" data-target="#myModal" >Look up by User</button>
 
   <!-- Modal -->
   <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
+    <div class="modal-dialog model-sm">
     
       <!-- Modal content-->
-     	<h1>LookupUser</h1>
+        <div class="modal-content bg-danger border border-dark text-light text-center">
+        <div class="modal-header border border-dark">
+     	<h2 class="modal-title border-dark">Look up User</h2>
+     	</div>
 	<form action="/employee/lookupUser" method="post">
 		<table>
     
-      <tr><td><h4>Insert Employee info below</h4></td></tr>
+      <tr>
+      <td>
+      <h2>Insert Employee info below</h2>
+      </td>
+      </tr>
 			<tr>
-				<td>Employee Username: <input type="text" name="username" /></td>
+				<td class="text-center">Employee Username: <input type="text" name="username" /></td>
 			</tr>
-			
-				<td><input type="Submit" value="SUBMIT"/></td>
+			<tr>
+				<td><input class =" btn btn-s bg-dark text-light" type="Submit" value="SUBMIT"/></td></tr>
 		</table>
-		</form>
+		</form></div>
     </div>
   </div>
   
 </div>
 	
 	
-	
-  <!--   <div class="container">
-  <h2>Insert Employee</h2>
-  Trigger the modal with a button
-  <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal1">Open Modal</button>
+	<div class="container">
 
-  Modal
-  <div class="modal fade" id="myModal1" role="dialog">
-    <div class="modal-dialog">
-    
-      Modal content
-     	<h1>Insert employee</h1>
-	<form action="/employee/new" method="post">
-		<table>
-      
-      <tr><td><h4>Insert Employee info below</h4></td></tr>
-			<tr>
-				<td>Employee First Name: <input type="text" name="fname" /></td>
-			</tr>
-			<tr>
-				<td>Employee Last Name: <input type="text" name="lname" /></td>
-			</tr>
-			<tr>
-				<td>Employee email: <input type="text" name="email" /></td>
-			</tr>
-			<tr>
-				<td>Employee Role: <input type="text" name="emprole" /></td>
-			</tr>
-			<tr>
-				<td>Employee Phone Number: <input type="text"
-					name="phonenumber"/></td>
-			</tr>
-			<tr>
-				<td>Employee Hourly Wage: <input type="number" name="hourly" /></td>
-			</tr>
-			<tr>
-				<td>Employee Username: <input type="text" name="username" /></td>
-			</tr>
-			<tr>
-				<td>Employee Password: <input type="text" name="passcode" /></td>
-			</tr>
-	
-			
-				<tr><td><input type="Submit" value="SUBMIT"/></td>
-			</tr>
-   
-		</table>
-	</form>
-      
-    </div>
-  </div>
-  
-</div> -->
+<h2>Search All Employees</h2>
+		<form action="/employee/searchallfromhr" method = "POST">
+		<input class="bg-danger btn btn-lg text-light" type="Submit" value="Search all Employees"/>
+		</form>
+
+</div>
 
 
-
-<%-- 	<h1>Delete employee</h1>
-	${deleted}
-	<br> ${doesntexist}
-	<form action="/employee/delete" method="post">
-		<table>
-			<tr>
-				<td>Enter employee username:<input type="text" name="username">
-				</td>
-			</tr>
-			<tr>
-				<td><input type="Submit" value="SUBMIT" /></td>
-			</tr>
-
-
-
-
-		</table>
-	</form> --%>
-
-				<!-- button is link to next page, jsp:foward("/name.jsp")
-				ask user to enter employee name/then retrieve employee name 
-				use modal for updates
-				bootstrap for modal-->
-<!-- Submit button to pull in all the information, then the below table updates information -->
-<!-- create a method select employee, send user to another jsp page that uses the model.setattribute all values that
-comes with the employee. Then in the JSP  -->
-		
-			
-	<!-- Employee CRUD END -->
-
-
-	<!-- Documents CRUD START -->
-
-	<!--    
-     <h1>Update Documents</h1>
-    <form  action="/employee/hr" method="post">
-    <table>
-    <tr>
-    <td>Employee First Name: <input type="text" name="fname" /></td>
-    </tr>
-     <tr>
-    <td>Employee Last Name: <input type="text" name="lname" /></td>
-    </tr>
-     <tr>
-    <td>Employee email: <input type="text" name="email" /></td>
-    </tr>
-     <tr>
-    <td>Employee Role: <input type="text" name="emprole" /></td>
-    </tr>
-     <tr>
-    <td>Employee Phone Number: <input type="text" name="phonenumber" /></td>
-    </tr>
-     <tr>
-    <td>Employee Hourly Wage: <input type="number" name="hourly" /></td>
-    </tr>
-     <tr>
-    <td>Employee id verification: <input type="number" name="employee_id" /></td>
-    </tr>
-     <tr>
-    <td><input type="Submit" value = "SUBMIT"/> </td>
-    </tr>
-    </table></form>
-    
-    
-        <form action="/WebApp/LookUp" method="post">
-    <table>
-    <tr>
-    <td>Look up document by name
-    </td>
-    <td><input type ="text" name="fname"></td>
-   
-    </tr>
-
-    <tr>
-    <td><input type="Submit" value = "SUBMIT"/> </td>
-    </tr>
-    </table></form>
-    
-    Documents CRUD END
-    
-   
-    -->
-  
-   
-  <!--   Training CRUD start -->
-    
- <%--  <form action="/GetWebMessage/hero" method="post">
-  <input type="text" placeholder="Write message here" name="message_from_hr" size="255">
-  <input type="submit" value="SUBMIT">
-  </form>
-    
-    <p>${message }<p>
-     --%>
-    
-	<!-- Training CRUD END -->
-	
-	<!-- make button for logout, call method logout() -->
-	<!-- put session.invalidate() in the logout method, then forward to login page -->
-	
+<div class="">
+<div id="containerButton"class="container-fluid fixed-bottom mb-5">
 	<form action="/logout" method="post">
-<input type="submit" value="Logout">
-</form>
+<input id="logoutButton"class="btn btn-info btn-lg bg-danger" type="submit" value="Logout">
+
+</form></div>
+</div>
+<%@ include file = "footer.jsp" %>
+
+
+
 </body>
 </html>

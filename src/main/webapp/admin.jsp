@@ -4,89 +4,128 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  
+  <style>
+
+ .container {
+margin-left: 35%;
+}
+#TekHeroesLogo1 { width: 10%;
+				height: 10%;
+				margin-right:100%;
+			
+}
+  </style>
 <title>Insert title here</title>
 </head>
 <body>
-<h2>Welcome ${userNameFromDB }</h2>
-	<!-- Need to log in a user first, need viewdata servlet -->
-	<form>
-		<table border="2px">
-			<tr>
-				<td>First Name</td>
-				<td>${fnameFromDB }</td>
-			</tr>
-			<tr>
-				<td>Last Name</td>
-				<td>${lnameFromDB }</td>
-			</tr>
-			<tr>
-				<td>Email</td>
-				<td>${emailFromDB }</td>
-			</tr>
-			<tr>
 
-			</tr>
-		</table>
-	</form>
+<%@ include file = "adminheader.jsp" %>
+
+<div class="container-fuild">
+
+
+	</div>
 	  <div class="container">
   <h2>Insert Employee</h2>
   <!-- Trigger the modal with a button -->
-  <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal1">New Employee</button>
+  <button type="button" class="btn btn-info btn-lg bg-danger" data-toggle="modal" data-target="#myModal1">New Employee</button>
 
   <!-- Modal -->
   <div class="modal fade" id="myModal1" role="dialog">
     <div class="modal-dialog">
     
-      <!-- Modal content-->
-     	<h1>Insert employee</h1>
+     <!-- Modal content-->
+    
+     <div class="modal-content bg-danger border border-dark text-light text-center">
+        <div class="modal-header border border-dark">
+     	<h2 class="modal-title border-dark">Insert Employee</h2>
+     	</div>
+     
+     
 	<form action="/employee/new" method="post">
 		<table>
       
-      <tr><td><h4>Insert Employee info below</h4></td></tr>
+      <tr>
+      <td><h2>Insert Employee info below</h2></td>
+      </tr>
 			<tr>
-				<td>Employee First Name: <input type="text" name="fname" /></td>
+				<td>Employee First Name: </td>
+			</tr>	
+			
+			<tr>
+			<td><input type="text" name="fname" /></td>
+			</tr>
+				
+		
+			<tr>
+				<td>Employee Last Name: </td>
+				</tr>
+				
+			<tr><td><input type="text" name="lname" /></td></tr>
+			
+			<tr>
+				<td>Employee email: </td></tr>
+				<tr><td><input type="text" name="email" /></td>
 			</tr>
 			<tr>
-				<td>Employee Last Name: <input type="text" name="lname" /></td>
+				<td>Employee Role:</td></tr>
+				<tr><td> <input type="text" name="emprole" /></td>
 			</tr>
 			<tr>
-				<td>Employee email: <input type="text" name="email" /></td>
-			</tr>
-			<tr>
-				<td>Employee Role: <input type="text" name="emprole" /></td>
-			</tr>
-			<tr>
-				<td>Employee Phone Number: <input type="text"
+				<td>Employee Phone Number: </td></tr>
+				<tr><td><input type="text"
 					name="phonenumber"/></td>
 			</tr>
 			<tr>
-				<td>Employee Hourly Wage: <input type="number" name="hourly" /></td>
+				<td>Employee Hourly Wage: </td></tr>
+			<tr>	<td><input type="number" name="hourly" /></td>
 			</tr>
 			<tr>
-				<td>Employee Username: <input type="text" name="username" /></td>
+				<td>Employee Username: </td></tr>
+				<tr><td> <input type="text" name="username" /></td>
 			</tr>
 			<tr>
-				<td>Employee Password: <input type="text" name="passcode" /></td>
+				<td>Employee Password: </td></tr>
+				<tr><td> <input type="text" name="passcode" /></td>
 			</tr>
 	
-			
+			<tr>
+			<td>Employee Onboarding Date:</td>
+			</tr><tr><td><input type="date" name="onboarding_date"></td>
+			</tr>
 				<tr><td><input type="Submit" value="SUBMIT"/></td>
 			</tr>
    
 		</table>
 	</form>
-      
+      </div>
     </div>
   </div>
   
 </div>
+<div class="container">
+<h2>Delete employee</h2>
 
-<h1>Delete employee</h1>
+<button type="button" class="btn btn-info btn-lg bg-danger" data-toggle="modal" data-target="#myModal2">Delete</button>
 	${deleted}
 	<br> ${doesntexist}
+	
+	 <div class="modal fade" id="myModal2" role="dialog">
+    <div class="modal-dialog">
+    
+     <!-- Modal content-->
+    
+     <div class="modal-content bg-danger border border-dark text-light text-center">
+        <div class="modal-header border border-dark">
+     	<h2 class="modal-title border-dark">Delete Employee by Username</h2>
+     	</div>
+     
 	<form action="/employee/delete" method="post">
 		<table>
 			<tr>
@@ -99,11 +138,17 @@
 
 
 
-
 		</table>
 	</form>
+	</div>
+	</div>
+	</div>
+	</div>
+
 	<form action="/logout" method="post">
-<input type="submit" value="Logout">
+<input type="submit"class="btn btn-info btn-m bg-danger" value="Logout">
 </form>
+<%@ include file = "footer.jsp" %>
+
 </body>
 </html>

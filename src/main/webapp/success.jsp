@@ -7,7 +7,11 @@
 <title>Insert title here</title>
 </head>
 <body>
+<%@ include file = "adminheader.jsp" %>
 <h1>Success</h1>
+
+
+<%@ include file = "footer.jsp" %>
 
 </body>
 </html>
